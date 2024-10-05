@@ -8,12 +8,20 @@ const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
 
 
+// create new webinar
 router.post(
   '/webinars',
   authMiddleware,
   validateWebinarCreation,
   handleValidation,        
   asyncHandler(webinarController.createWebinar)
+);
+
+// get all webinars
+router.get(
+  '/webinars',
+  authMiddleware, 
+  asyncHandler(webinarController.getAllWebinars)
 );
 
 module.exports = router;

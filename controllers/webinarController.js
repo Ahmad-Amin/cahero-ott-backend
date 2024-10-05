@@ -1,4 +1,3 @@
-const User = require('../models/User');
 const Webinar = require('../models/Webinar');
 
 const webinarController = {
@@ -22,6 +21,16 @@ const webinarController = {
       res.status(201).json(webinar);
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  },
+
+  getAllWebinars: async (req, res) => {
+    try {
+      const webinars = await Webinar.find();
+      res.status(200).json({ results: webinars });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
     }
   }
 }
