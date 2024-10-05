@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Phone Number is required'],
     trim: true,
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'], 
+    default: 'admin',
+  },
 })
 
 // Add toJSON and toObject transformation
