@@ -24,4 +24,12 @@ router.get(
   asyncHandler(webinarController.getAllWebinars)
 );
 
+//delete a wabinar
+// get all webinars
+router.delete(
+  '/webinars/:id',
+  authMiddleware, 
+  asyncHandler(webinarController.deleteWebinar)
+);
+
 module.exports = router;

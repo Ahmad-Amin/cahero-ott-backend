@@ -24,6 +24,29 @@ const webinarController = {
     }
   },
 
+  deleteWebinar: async (req, res) => {
+    try {
+
+      const { id: webinarId } = req.params;
+      const webinar = await Webinar.findById(webinarId);
+  
+      if (!webinar) {
+        return res.status(404).json({ message: 'Webinar not found' });
+      }
+  
+      if (webinar.user.toString() !== req.user.userId) {
+        return res.status(403).json({ message: 'Unauthorized: You cannot delete this webinar' });
+      }
+  
+      await Webinar.findByIdAndDelete(webinarId);
+  
+      res.status(204).send(); 
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+    }
+  },
+
   getAllWebinars: async (req, res) => {
     try {
       const webinars = await Webinar.find();
