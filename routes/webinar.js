@@ -24,12 +24,29 @@ router.get(
   asyncHandler(webinarController.getAllWebinars)
 );
 
+// get  webinar by ID
+router.get(
+  '/webinars/:id',
+  authMiddleware, 
+  asyncHandler(webinarController.getWebinarById)
+);
+
+
 //delete a wabinar
-// get all webinars
 router.delete(
   '/webinars/:id',
   authMiddleware, 
   asyncHandler(webinarController.deleteWebinar)
 );
+
+// Update a webinar
+router.patch(
+  '/webinars/:id',
+  authMiddleware,
+  validateWebinarCreation,
+  handleValidation,        
+  asyncHandler(webinarController.updateWebinar)
+);
+
 
 module.exports = router;
