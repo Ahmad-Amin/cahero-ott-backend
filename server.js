@@ -3,6 +3,7 @@ require('dotenv').config(); // Load environment variables
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/database'); 
 const mainRouter = require('./routes/router');
@@ -15,13 +16,24 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 };
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window`
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 
+
+
+
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(limiter);
 
 app.use('/api', mainRouter);
 
