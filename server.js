@@ -12,7 +12,6 @@ const corsOptions = {
   origin: '*',
   optionsSuccessStatus: 200,
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 };
 
@@ -33,7 +32,7 @@ const server = http.createServer(app);
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(limiter);
+// app.use(limiter);
 
 app.use('/api', mainRouter);
 

@@ -34,9 +34,9 @@ const webinarController = {
         return res.status(404).json({ message: 'Webinar not found' });
       }
   
-      if (webinar.user.toString() !== req.user.userId) {
-        return res.status(403).json({ message: 'Unauthorized: You cannot delete this webinar' });
-      }
+      // if (webinar.user.toString() !== req.user.userId) {
+      //   return res.status(403).json({ message: 'Unauthorized: You cannot delete this webinar' });
+      // }
   
       await Webinar.findByIdAndDelete(webinarId);
   

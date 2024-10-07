@@ -20,14 +20,14 @@ router.post(
 // get all webinars
 router.get(
   '/webinars',
-  authMiddleware, 
+  // authMiddleware, 
   asyncHandler(webinarController.getAllWebinars)
 );
 
 // get  webinar by ID
 router.get(
   '/webinars/:id',
-  authMiddleware, 
+  // authMiddleware, 
   asyncHandler(webinarController.getWebinarById)
 );
 
