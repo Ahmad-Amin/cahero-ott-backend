@@ -10,11 +10,12 @@ const mainRouter = require('./routes/router');
 
 // Updated CORS options
 const corsOptions = {
-  origin: '*', // Replace with your frontend's origin
+  origin: '*', // Replace with your frontend's origin for better security, e.g. 'http://localhost:3000'
   optionsSuccessStatus: 200,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Authorization', 'Content-Type', 'ngrok-skip-browser-warning'], // Allow custom headers
+  preflightContinue: true, // Ensure preflight requests are forwarded to the next handler
 };
 
 const limiter = rateLimit({
