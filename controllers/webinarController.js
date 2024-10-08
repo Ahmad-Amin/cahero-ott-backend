@@ -1,4 +1,6 @@
 const Webinar = require('../models/Webinar');
+const User = require('../models/User');
+const nodemailer = require('nodemailer');
 
 const webinarController = {
 
@@ -33,10 +35,6 @@ const webinarController = {
       if (!webinar) {
         return res.status(404).json({ message: 'Webinar not found' });
       }
-  
-      // if (webinar.user.toString() !== req.user.userId) {
-      //   return res.status(403).json({ message: 'Unauthorized: You cannot delete this webinar' });
-      // }
   
       await Webinar.findByIdAndDelete(webinarId);
   
@@ -100,6 +98,50 @@ const webinarController = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
+    }
+  },
+
+  sendEmailToAllUsers: async (req, res) => {
+    try {
+      const { id: webinarId } = req.params;
+
+      // Fetch the webinar details
+      const webinar = await Webinar.findById(webinarId);
+      if (!webinar) {
+        return res.status(404).json({ message: 'Webinar not found' });
+      }
+
+      // Fetch all users from the database
+      const users = await User.find({}, 'email'); // Fetch only the email field
+
+      // Setup email transport (You need to configure this with your credentials)
+      const transporter = nodemailer.createTransport({
+        service: 'gmail', // or your email provider
+        auth: {
+          user: process.env.EMAIL_USER, // Email sender
+          pass: process.env.EMAIL_PASS, // Password
+        },
+      });
+
+      // Prepare the email content
+      const mailOptions = {
+        from: process.env.EMAIL_USER, // Your email
+        subject: `Invitation to Webinar: ${webinar.title}`,
+        text: `You are invited to join the webinar "${webinar.title}". \n\nDetails:\nDescription: ${webinar.description}\nDate: ${webinar.startDate.toDateString()}\nStart Time: ${webinar.startTime}\nEnd Time: ${webinar.endTime}`
+      };
+
+      // Send email to all users
+      const emailPromises = users.map(user => {
+        return transporter.sendMail({ ...mailOptions, to: user.email });
+      });
+
+      // Wait for all emails to be sent
+      await Promise.all(emailPromises);
+
+      res.status(200).json({ message: 'Emails sent successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error: Failed to send emails' });
     }
   }
 }

@@ -49,4 +49,11 @@ router.patch(
 );
 
 
+// Update a webinar
+router.post(
+  '/webinars/:id/send-email',
+  authMiddleware,
+  asyncHandler(webinarController.sendEmailToAllUsers)
+);
+
 module.exports = router;
