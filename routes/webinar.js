@@ -56,4 +56,11 @@ router.post(
   asyncHandler(webinarController.sendEmailToAllUsers)
 );
 
+// Update a webinar
+router.post(
+  '/webinars/:id/start-stream',
+  authMiddleware,
+  asyncHandler(webinarController.startStream)
+);
+
 module.exports = router;
