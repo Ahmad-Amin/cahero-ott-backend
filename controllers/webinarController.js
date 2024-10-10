@@ -4,6 +4,26 @@ const nodemailer = require('nodemailer');
 
 const webinarController = {
 
+  joinWebinar: async (req, res) => {
+    try {
+      const { id: webinarId } = req.params;
+      const webinar = await Webinar.findById(webinarId);
+
+      if (!webinar) {
+        return res.status(404).json({ message: 'Webinar not found' });
+      }
+
+      if (!webinar.isLive) {
+        return res.status(400).json({ message: 'Webinar has not started yet' });
+      }
+
+      return res.status(200).json({ message: 'Webinar is live' });
+
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   createWebinar: async (req, res) => {
     try {
       const { title, startTime, endTime, startDate, description, type, user } = req.body;
@@ -127,7 +147,7 @@ const webinarController = {
       const mailOptions = {
         from: process.env.EMAIL_USER, // Your email
         subject: `Invitation to Webinar: ${webinar.title}`,
-        text: `You are invited to join the webinar "${webinar.title}". \n\nDetails:\nDescription: ${webinar.description}\nDate: ${webinar.startDate.toDateString()}\nStart Time: ${webinar.startTime}\nEnd Time: ${webinar.endTime}`
+        text: `You are invited to join the webinar "${webinar.title}". \nWebinar ID to Join: ${webinar.id} \n\nDetails:\nDescription: ${webinar.description}\nDate: ${webinar.startDate.toDateString()}\nStart Time: ${webinar.startTime}\nEnd Time: ${webinar.endTime}`
       };
 
       // Send email to all users
@@ -148,32 +168,29 @@ const webinarController = {
   startStream: async (req, res) => {
     try {
       const { id: webinarId } = req.params;
-      const { streamId } = req.body;
 
-      if (!streamId) {
-        return res.status(404).json({ message: 'Stream Id not found' });
-      }
-
-      // Fetch the webinar details
       const webinar = await Webinar.findById(webinarId);
       if (!webinar) {
         return res.status(404).json({ message: 'Webinar not found' });
       }
 
-      const users = await User.find({}, 'email'); // Fetch only the email field
+      webinar.isLive = true;
+      await webinar.save();
+
+      const users = await User.find({}, 'email');
       const transporter = nodemailer.createTransport({
-        service: 'gmail', // or your email provider
+        service: 'gmail',
         auth: {
-          user: process.env.EMAIL_USER, // Email sender
-          pass: process.env.EMAIL_PASS, // Password
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
       });
 
       const mailOptions = {
-        from: process.env.EMAIL_USER, // Your email
-        subject: `${webinar.title} has started!`, // Updated subject
+        from: process.env.EMAIL_USER,
+        subject: `${webinar.title} has started!`,
         text: `The webinar "${webinar.title}" has just started!\n\n` +
-          `You can join the webinar using the following stream ID: **${streamId}**\n\n` +
+          `You can join the webinar using the following ID: **${webinar.id}**\n\n` +
           `Details:\n` +
           `Description: ${webinar.description}\n` +
           `Date: ${webinar.startDate.toDateString()}\n` +

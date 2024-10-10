@@ -49,7 +49,7 @@ router.patch(
 );
 
 
-// Update a webinar
+// send webinar id to add users
 router.post(
   '/webinars/:id/send-email',
   authMiddleware,
@@ -57,10 +57,20 @@ router.post(
 );
 
 // Update a webinar
-router.post(
+router.patch(
   '/webinars/:id/start-stream',
   authMiddleware,
   asyncHandler(webinarController.startStream)
 );
+
+
+// Join Webinar Check
+router.post(
+  '/webinars/:id/join',
+  authMiddleware,
+  asyncHandler(webinarController.joinWebinar)
+);
+
+
 
 module.exports = router;

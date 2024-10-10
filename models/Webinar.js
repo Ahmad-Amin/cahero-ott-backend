@@ -32,6 +32,10 @@ const webinarSchema = new Schema({
     enum: ['paid', 'unpaid'],
     default: 'unpaid',
   },
+  isLive: {
+    type: Boolean,
+    default: false,
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
