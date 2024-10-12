@@ -5,12 +5,12 @@ const handleValidation = (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       errors: errors.array().map(err => ({
-        field: err.path,
+        field: err.param, 
         message: err.msg
       }))
     });
   }
-  next(); // Proceed if no validation errors
+  next(); 
 };
 
 module.exports = handleValidation;
