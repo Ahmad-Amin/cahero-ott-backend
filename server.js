@@ -33,6 +33,7 @@ const server = http.createServer(app);
 app.use(cors(corsOptions)); // Use CORS with updated options
 app.options('*', cors(corsOptions)); // Handle preflight requests
 app.use(express.json());
+app.use('/assets', express.static('assets'));
 // app.use(limiter);
 
 app.use('/api', mainRouter);
