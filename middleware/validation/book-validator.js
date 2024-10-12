@@ -24,12 +24,22 @@ const validateBookCreation = [
   body('coverImageUrl')
     .trim()
     .notEmpty().withMessage('Cover image URL is required')
-    .isURL().withMessage('Cover image URL must be a valid URL'),
+    .isURL({
+      require_tld: false,
+      protocols: ['http', 'https'],
+      require_protocol: true
+    })
+    .withMessage('Cover image URL must be a valid URL'),
 
   body('audioFileUrl')
     .optional()
     .trim()
-    .isURL().withMessage('Audio file URL must be a valid URL if provided'),
+    .isURL({
+      require_tld: false,
+      protocols: ['http', 'https'],
+      require_protocol: true
+    })
+    .withMessage('Audio file URL must be a valid URL if provided'),
 ];
 
 
@@ -57,12 +67,22 @@ const validateBookUpdate = [
   body('coverImageUrl')
     .optional()
     .trim()
-    .isURL().withMessage('Cover image URL must be a valid URL'),
+    .isURL({
+      require_tld: false,
+      protocols: ['http', 'https'],
+      require_protocol: true
+    })
+    .withMessage('Cover image URL must be a valid URL'),
 
   body('audioFileUrl')
     .optional()
     .trim()
-    .isURL().withMessage('Audio file URL must be a valid URL if provided'),
+    .isURL({
+      require_tld: false,
+      protocols: ['http', 'https'],
+      require_protocol: true
+    })
+    .withMessage('Audio file URL must be a valid URL if provided'),
 ];
 
 
