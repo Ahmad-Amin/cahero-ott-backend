@@ -21,10 +21,10 @@ const validateLectureCreation = [
     .notEmpty().withMessage('Category is required')
     .isIn(allowedLectureCategories).withMessage(`Category must be one of the following: ${allowedLectureCategories.join(', ')}`),
 
-  body('overview')
+  body('description')
     .trim()
-    .notEmpty().withMessage('Overview is required')
-    .isString().withMessage('Overview must be a valid string'),
+    .notEmpty().withMessage('Description is required')
+    .isString().withMessage('Description must be a valid string'),
 
   body('coverImageUrl')
     .trim()
@@ -63,10 +63,10 @@ const validateLectureUpdate = [
     .trim()
     .isIn(allowedLectureCategories).withMessage(`Category must be one of the following: ${allowedLectureCategories.join(', ')}`),
 
-  body('overview')
+  body('description')
     .optional()
     .trim()
-    .isString().withMessage('Overview must be a valid string'),
+    .isString().withMessage('Description must be a valid string'),
 
   body('coverImageUrl')
     .optional()

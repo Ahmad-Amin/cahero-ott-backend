@@ -3,13 +3,13 @@ const Lecture = require('../models/Lecture');
 const lectureController = {
   createLecture: async (req, res) => {
     try {
-      const { title, duration, category, overview, coverImageUrl, videoUrl } = req.body;
+      const { title, duration, category, description, coverImageUrl, videoUrl } = req.body;
 
       const lecture = new Lecture({
         title,
         duration,
         category,
-        overview,
+        description,
         coverImageUrl,
         videoUrl
       });

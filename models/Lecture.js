@@ -16,7 +16,7 @@ const lectureSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  overview: {
+  description: {
     type: String,
     required: true,
     trim: true
