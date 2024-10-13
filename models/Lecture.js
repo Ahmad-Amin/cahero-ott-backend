@@ -7,8 +7,9 @@ const lectureSchema = new mongoose.Schema({
     trim: true
   },
   duration: {
-    type: Number,
-    required: true
+    type: String,
+    required: true,
+    trim: true
   },
   category: {
     type: String,

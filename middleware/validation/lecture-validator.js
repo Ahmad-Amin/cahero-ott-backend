@@ -1,5 +1,8 @@
 const { body } = require('express-validator');
 
+// Regular expression to validate the HH:MM:SS format
+const durationRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
+
 const validateLectureCreation = [
   body('title')
     .trim()
@@ -7,8 +10,9 @@ const validateLectureCreation = [
     .isLength({ max: 200 }).withMessage('Title must not exceed 200 characters'),
 
   body('duration')
+    .trim()
     .notEmpty().withMessage('Duration is required')
-    .isNumeric().withMessage('Duration must be a valid number'),
+    .matches(durationRegex).withMessage('Duration must be in the format HH:MM:SS'),
 
   body('category')
     .trim()
@@ -49,7 +53,8 @@ const validateLectureUpdate = [
 
   body('duration')
     .optional()
-    .isNumeric().withMessage('Duration must be a valid number'),
+    .trim()
+    .matches(durationRegex).withMessage('Duration must be in the format HH:MM:SS'),
 
   body('category')
     .optional()

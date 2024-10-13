@@ -3,9 +3,9 @@ const { body } = require('express-validator');
 const validateFile = (type) => {
 
   const sizeLimits = {
-    image: 5 * 1024 * 1024, // 5MB for image files
-    audio: 5 * 1024 * 1024, // 5MB for audio files
-    video: 20 * 1024 * 1024 // 20MB for video files
+    image: 5 * 1024 * 1024,
+    audio: 5 * 1024 * 1024,
+    video: 20 * 1024 * 1024
   };
 
   const allowedMimeTypes = {
