@@ -1,4 +1,6 @@
 const { body } = require('express-validator');
+const { allowedLectureCategories } = require('../../constants/lecture');
+
 
 // Regular expression to validate the HH:MM:SS format
 const durationRegex = /^([0-1]\d|2[0-3]):([0-5]\d):([0-5]\d)$/;
@@ -17,7 +19,7 @@ const validateLectureCreation = [
   body('category')
     .trim()
     .notEmpty().withMessage('Category is required')
-    .isLength({ max: 100 }).withMessage('Category must not exceed 100 characters'),
+    .isIn(allowedLectureCategories).withMessage(`Category must be one of the following: ${allowedLectureCategories.join(', ')}`),
 
   body('overview')
     .trim()
@@ -59,7 +61,7 @@ const validateLectureUpdate = [
   body('category')
     .optional()
     .trim()
-    .isLength({ max: 100 }).withMessage('Category must not exceed 100 characters'),
+    .isIn(allowedLectureCategories).withMessage(`Category must be one of the following: ${allowedLectureCategories.join(', ')}`),
 
   body('overview')
     .optional()
