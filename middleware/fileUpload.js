@@ -1,8 +1,26 @@
+const { S3Client } = require('@aws-sdk/client-s3');
+const { Upload } = require('@aws-sdk/lib-storage');
 const multer = require('multer');
-const fs = require('fs');
+const multerS3 = require('multer-s3');
+require('dotenv').config();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+// Configure S3 client
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+// Configure multerS3 for S3 file upload
+const storage = multerS3({
+  s3: s3,
+  bucket: process.env.S3_BUCKET_NAME,
+  metadata: (req, file, cb) => {
+    cb(null, { fieldName: file.fieldname });
+  },
+  key: (req, file, cb) => {
     let folder = 'assets';
 
     if (file.mimetype.startsWith('image/')) {
@@ -13,22 +31,19 @@ const storage = multer.diskStorage({
       folder = 'assets/videos';
     }
 
-    fs.mkdirSync(folder, { recursive: true });
-    cb(null, folder);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, `${folder}/${Date.now()}-${file.originalname}`);
   }
 });
 
+// Set up multer with the S3 storage configuration
 const upload = multer({
   storage,
   limits: {
-    fileSize: 50 * 1024 * 1024
+    fileSize: 50 * 1024 * 1024,  // 50 MB file size limit
   },
   fileFilter: (req, file, cb) => {
-    cb(null, true);
-  }
+    cb(null, true);  // Allow all file types
+  },
 });
 
 module.exports = upload;

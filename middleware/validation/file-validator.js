@@ -9,7 +9,7 @@ const validateFile = (type) => {
   };
 
   const allowedMimeTypes = {
-    image: ['image/jpeg', 'image/png', 'image/gif'],
+    image: ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'],
     audio: ['audio/mpeg', 'audio/wav', 'audio/mp3'],
     video: ['video/mp4', 'video/x-matroska', 'video/webm']
   };
