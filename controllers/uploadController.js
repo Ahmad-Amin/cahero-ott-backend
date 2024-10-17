@@ -5,7 +5,7 @@ const uploadFile = (req, res) => {
     return res.status(400).json({ message: 'No file uploaded' });
   }
 
-  const normalizedPath = path.posix.normalize(req.file.location);
+  const normalizedPath = req.file.location;
 
   res.status(200).json({ message: 'File uploaded successfully', fileUrl: normalizedPath });
 };
