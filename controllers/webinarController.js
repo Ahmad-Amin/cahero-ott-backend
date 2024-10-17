@@ -26,7 +26,7 @@ const webinarController = {
 
   createWebinar: async (req, res) => {
     try {
-      const { title, startTime, endTime, startDate, description, type, user } = req.body;
+      const { title, startTime, endTime, startDate, description, type, coverImageUrl } = req.body;
       const { userId } = req.user;
 
       const webinar = new Webinar({
@@ -36,6 +36,7 @@ const webinarController = {
         startDate: new Date(startDate),
         description,
         type,
+        coverImageUrl,
         user: userId,
       });
 

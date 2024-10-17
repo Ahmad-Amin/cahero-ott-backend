@@ -36,6 +36,11 @@ const webinarSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  coverImageUrl: {
+    type: String,
+    required: false,
+    trim: true
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',

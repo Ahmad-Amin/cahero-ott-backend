@@ -3,7 +3,7 @@ const router = express.Router();
 
 const authMiddleware = require('../middleware/auth.js')
 const webinarController = require('../controllers/webinarController.js');
-const { validateWebinarCreation } = require('../middleware/validation/webinar-validator.js')
+const { validateWebinarCreation, validateWebinarUpdate } = require('../middleware/validation/webinar-validator.js')
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
 
@@ -43,7 +43,7 @@ router.delete(
 router.patch(
   '/webinars/:id',
   authMiddleware,
-  validateWebinarCreation,
+  validateWebinarUpdate,
   handleValidation,        
   asyncHandler(webinarController.updateWebinar)
 );
@@ -70,7 +70,5 @@ router.post(
   authMiddleware,
   asyncHandler(webinarController.joinWebinar)
 );
-
-
 
 module.exports = router;
