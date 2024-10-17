@@ -10,6 +10,14 @@ const userController = require('../controllers/userController.js');
 router.get('/users', authMiddleware, userController.getAllUsers)
 router.get('/me', authMiddleware, userController.getMe)
 
+
+//delete a wabinar
+router.delete(
+  '/users/:id',
+  authMiddleware, 
+  asyncHandler(userController.deleteUser)
+);
+
 router.patch(
   '/me',
   authMiddleware,
