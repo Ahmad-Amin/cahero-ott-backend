@@ -19,10 +19,21 @@ router.delete(
 );
 
 router.patch(
+  '/users/:id',
+  authMiddleware,
+  validateUserUpdate,
+  handleValidation,
+  asyncHandler(userController.updateUsers)
+);
+
+router.patch(
   '/me',
   authMiddleware,
   validateUserUpdate,
   handleValidation,
-  asyncHandler(userController.updateUser))
+  asyncHandler(userController.updateUser)
+)
+
+
 
 module.exports = router;

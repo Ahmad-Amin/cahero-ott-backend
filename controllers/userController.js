@@ -59,6 +59,25 @@ const userController = {
       console.error(error);
       res.status(500).json({ message: 'Server Error: Make sure ID is present' });
     }
+  },
+
+  updateUsers: async (req, res) => {
+    try {
+      const { id: userId } = req.params;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { $set: req.body },
+        { new: true, runValidators: true }
+      );
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+    }
   }
 }
 
