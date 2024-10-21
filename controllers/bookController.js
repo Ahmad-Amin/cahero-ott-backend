@@ -23,7 +23,14 @@ const bookController = {
 
   getAllBooks: async (req, res) => {
     try {
-      const books = await Book.find();
+      const { type } = req.query;
+      let filter = {};
+
+      if (type === 'past') {
+        filter = { createdAt: { $lt: new Date() } }; 
+      }
+
+      const books = await Book.find(filter);
       res.status(200).json({ results: books });
     } catch (error) {
       console.error(error);

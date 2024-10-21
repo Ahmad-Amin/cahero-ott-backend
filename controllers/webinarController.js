@@ -178,32 +178,32 @@ const webinarController = {
       webinar.isLive = true;
       await webinar.save();
 
-      // const users = await User.find({}, 'email');
-      // const transporter = nodemailer.createTransport({
-      //   service: 'gmail',
-      //   auth: {
-      //     user: process.env.EMAIL_USER,
-      //     pass: process.env.EMAIL_PASS,
-      //   },
-      // });
+      const users = await User.find({}, 'email');
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
 
-      // const mailOptions = {
-      //   from: process.env.EMAIL_USER,
-      //   subject: `${webinar.title} has started!`,
-      //   text: `The webinar "${webinar.title}" has just started!\n\n` +
-      //     `You can join the webinar using the following ID: **${webinar.id}**\n\n` +
-      //     `Details:\n` +
-      //     `Description: ${webinar.description}\n` +
-      //     `Date: ${webinar.startDate.toDateString()}\n` +
-      //     `Start Time: ${webinar.startTime}\n` +
-      //     `End Time: ${webinar.endTime}`
-      // };
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        subject: `${webinar.title} has started!`,
+        text: `The webinar "${webinar.title}" has just started!\n\n` +
+          `You can join the webinar using the following ID: **${webinar.id}**\n\n` +
+          `Details:\n` +
+          `Description: ${webinar.description}\n` +
+          `Date: ${webinar.startDate.toDateString()}\n` +
+          `Start Time: ${webinar.startTime}\n` +
+          `End Time: ${webinar.endTime}`
+      };
 
-      // // Send email to all users
-      // const emailPromises = users.map(user => {
-      //   return transporter.sendMail({ ...mailOptions, to: user.email });
-      // });
-      // await Promise.all(emailPromises);
+      // Send email to all users
+      const emailPromises = users.map(user => {
+        return transporter.sendMail({ ...mailOptions, to: user.email });
+      });
+      await Promise.all(emailPromises);
 
       res.status(200).json({ message: 'Streaming started & Emails sent successfully' });
     } catch (error) {
