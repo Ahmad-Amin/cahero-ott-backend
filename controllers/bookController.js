@@ -27,7 +27,7 @@ const bookController = {
       let filter = {};
 
       if (type === 'past') {
-        filter = { createdAt: { $lt: new Date() } }; 
+        filter = { startDate: { $lt: new Date() } }; 
       }
 
       const books = await Book.find(filter);
