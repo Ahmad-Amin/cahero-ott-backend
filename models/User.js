@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  bio: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   password: {
     type: String,
     required: [true, 'Password is required'],
@@ -30,9 +35,14 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'], 
+    enum: ['user', 'admin'],
     default: 'admin',
   },
+  profileImageUrl: {
+    type: String,
+    required: false,
+    trim: true,
+  }
 })
 
 // Add toJSON and toObject transformation

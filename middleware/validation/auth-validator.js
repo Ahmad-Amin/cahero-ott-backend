@@ -33,6 +33,23 @@ const validateUserUpdate = [
     .isLength({ min: 10, max: 15 }).withMessage('Phone Number must be between 10 and 15 characters long')
     .matches(/^\+?[0-9]*$/).withMessage('Phone Number must be valid and contain only numbers'),
 
+  body('bio')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Bio cannot be empty'),
+
+
+  body('profileImageUrl')
+    .optional()
+    .trim()
+    .notEmpty().withMessage('Profile image URL is required')
+    .isURL({
+      require_tld: false,
+      protocols: ['http', 'https'],
+      require_protocol: true
+    })
+    .withMessage('Profile image URL must be a valid URL'),
+
   // body('address')
   //   .optional()
   //   .trim()
