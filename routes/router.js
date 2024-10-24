@@ -9,6 +9,7 @@ const dashboardRoutes = require('./dashboard');
 const bookRoutes = require('./book');
 const uploadRoutes = require('./upload');
 const lectureRoutes = require('./lecture');
+const notificationRoutes = require('./notification');
 
 router.use('/auth', authRoutes);
 router.use('/', userRoutes)
@@ -17,5 +18,6 @@ router.use('/', dashboardRoutes)
 router.use('/', bookRoutes)
 router.use('/', uploadRoutes)
 router.use('/', lectureRoutes)
+router.use('/', notificationRoutes)
 
 module.exports = router;
