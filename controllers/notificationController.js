@@ -1,4 +1,5 @@
 const Notification = require('../models/Notification');
+const { fetchUsersByRole, sendEmails } = require('../utils/helper_functions');
 
 const notificationController = {
   createNotification: async (req, res) => {
@@ -11,17 +12,35 @@ const notificationController = {
         content
       } = req.body;
 
+
+      let recipients = [];
+      if (recipientType === 'Admins') {
+        recipients = await fetchUsersByRole('admin');
+      } else if (recipientType === 'Users') {
+        recipients = await fetchUsersByRole('user');
+      }
+
       const notification = new Notification({
         notificationType,
         recipientType,
         specificRecipient,
         externalNotificationDelivery,
         content,
-        status: 'Pending' 
+        status: 'Pending'
       });
 
+      const subject = `New Notification: ${notificationType}`;
+      try {
+        await sendEmails(recipients, subject, content);
+        notification.status = 'Sent';
+      } catch (emailError) {
+        console.error('Failed to send some or all emails:', emailError.message);
+        notification.status = 'Failed';
+      }
+
       await notification.save();
-      res.status(201).json(notification);
+
+      res.status(201).json({ message: 'Notification created and processed', notification });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
