@@ -20,7 +20,7 @@ const notificationController = {
       } else if (recipientType === 'Users') {
         recipients = await fetchUsersByRole('user');
       } else {
-        recipients = await User.find({}, 'email')
+        recipients = (await User.find({}, 'email')).map(user => user.email);
       }
 
       const notification = new Notification({
@@ -51,14 +51,14 @@ const notificationController = {
 
   getAllNotifications: async (req, res) => {
     try {
-      const notifications = await Notification.find();
+      const notifications = await Notification.find().sort({ createdAt: -1 });
       res.status(200).json({ results: notifications });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
   },
-
+  
   getNotificationById: async (req, res) => {
     try {
       const { id: notificationId } = req.params;
