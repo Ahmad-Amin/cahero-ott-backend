@@ -1,5 +1,6 @@
 const Notification = require('../models/Notification');
 const { fetchUsersByRole, sendEmails } = require('../utils/helper_functions');
+const User = require('../models/User');
 
 const notificationController = {
   createNotification: async (req, res) => {
