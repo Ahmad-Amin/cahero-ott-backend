@@ -34,6 +34,10 @@ const notificationSchema = new Schema({
     enum: ['Sent', 'Failed', 'Pending'],
     default: 'Pending',
     required: true
+  },
+  recipients: {
+    type: [String], 
+    required: true
   }
 }, { timestamps: true });
 

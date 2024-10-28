@@ -23,13 +23,18 @@ const notificationController = {
         recipients = (await User.find({}, 'email')).map(user => user.email);
       }
 
+      if (specificRecipient && specificRecipient.includes('@')) {
+        recipients.push(specificRecipient);
+      }
+
       const notification = new Notification({
         notificationType,
         recipientType,
         specificRecipient,
         externalNotificationDelivery,
         content,
-        status: 'Pending'
+        status: 'Pending',
+        recipients: recipients,
       });
 
       const subject = `New Notification: ${notificationType}`;
@@ -49,6 +54,38 @@ const notificationController = {
     }
   },
 
+  resendNotification: async (req, res) => {
+    try {
+      const { notificationId } = req.params;
+
+      const notification = await Notification.findById(notificationId);
+      if (!notification) {
+        return res.status(404).json({ message: 'Notification not found' });
+      }
+
+      const { recipients, content, notificationType, specificRecipient } = notification;
+
+      if (specificRecipient && specificRecipient.includes('@') && !recipients.includes(specificRecipient)) {
+        recipients.push(specificRecipient);
+      }
+
+      const subject = `Resend Notification: ${notificationType}`;
+      try {
+        await sendEmails(recipients, subject, content);
+        notification.status = 'Sent';
+      } catch (emailError) {
+        console.error('Failed to resend some or all emails:', emailError.message);
+        notification.status = 'Failed';
+      }
+
+      await notification.save();
+
+      res.status(200).json({ message: 'Notification resent and processed', notification });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
   getAllNotifications: async (req, res) => {
     try {
       const notifications = await Notification.find().sort({ createdAt: -1 });
@@ -58,7 +95,7 @@ const notificationController = {
       res.status(500).json({ message: 'Server Error' });
     }
   },
-  
+
   getNotificationById: async (req, res) => {
     try {
       const { id: notificationId } = req.params;

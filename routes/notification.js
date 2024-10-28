@@ -16,6 +16,8 @@ router.post(
   asyncHandler(notificationController.createNotification)
 );
 
+router.post('/notifications/:notificationId/resend', authMiddleware, notificationController.resendNotification);
+
 // Get all notifications
 router.get(
   '/notifications',
@@ -36,5 +38,10 @@ router.delete(
   authMiddleware,
   asyncHandler(notificationController.deleteNotification)
 );
+
+
+
+
+
 
 module.exports = router;
