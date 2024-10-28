@@ -18,6 +18,8 @@ const notificationController = {
         recipients = await fetchUsersByRole('admin');
       } else if (recipientType === 'Users') {
         recipients = await fetchUsersByRole('user');
+      } else {
+        recipients = await User.find({}, 'email')
       }
 
       const notification = new Notification({
