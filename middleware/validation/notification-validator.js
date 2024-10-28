@@ -14,8 +14,7 @@ const validateNotificationCreation = [
   body('specificRecipient')
     .optional()
     .trim()
-    .isString().withMessage('Specific recipient must be a valid string')
-    .notEmpty().withMessage('Specific recipient must not be empty'),
+    .isString().withMessage('Specific recipient must be a valid string'),
 
   body('externalNotificationDelivery')
     .notEmpty().withMessage('External notification delivery option is required')
