@@ -54,6 +54,56 @@ const notificationController = {
     }
   },
 
+  updateNotification: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        notificationType,
+        recipientType,
+        specificRecipient,
+        externalNotificationDelivery,
+        content
+      } = req.body;
+
+      const notification = await Notification.findById(id);
+      if (!notification) {
+        return res.status(404).json({ message: 'Notification not found' });
+      }
+
+      // Update notification fields if provided
+      if (notificationType) notification.notificationType = notificationType;
+      if (recipientType) notification.recipientType = recipientType;
+      if (specificRecipient) notification.specificRecipient = specificRecipient;
+      if (externalNotificationDelivery !== undefined) notification.externalNotificationDelivery = externalNotificationDelivery;
+      if (content) notification.content = content;
+
+      // Update recipients based on recipientType
+      let recipients = notification.recipients;
+      if (recipientType === 'Admins') {
+        recipients = await fetchUsersByRole('admin');
+      } else if (recipientType === 'Users') {
+        recipients = await fetchUsersByRole('user');
+      } else {
+        recipients = (await User.find({}, 'email')).map(user => user.email);
+      }
+
+      if (specificRecipient && specificRecipient.includes('@')) {
+        recipients.push(specificRecipient);
+      }
+
+      notification.recipients = recipients;
+
+      // Save the updated notification
+      await notification.save();
+
+      res.status(200).json({ message: 'Notification updated successfully', notification });
+    } catch (error) {
+      console.error(error);
+      res.status(400).json({ error: error.message });
+    }
+  },
+
+
   resendNotification: async (req, res) => {
     try {
       const { notificationId } = req.params;
