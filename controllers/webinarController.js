@@ -114,15 +114,19 @@ const webinarController = {
 
   getAllWebinars: async (req, res) => {
     try {
-      const { type } = req.query;
+      const { type, search } = req.query;
       let filter = {};
   
       if (type === 'past') {
-        filter = { startDate: { $lt: new Date() } };
+        filter.startDate = { $lt: new Date() };
+      }
+  
+      if (search) {
+        filter.title = { $regex: search, $options: 'i' };
       }
   
       const webinars = await Webinar.find(filter).sort({ startDate: 1 });
-      res.status(200).json({ results: webinars });
+      res.status(200).json(webinars); 
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });

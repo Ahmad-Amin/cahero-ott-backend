@@ -23,20 +23,25 @@ const bookController = {
 
   getAllBooks: async (req, res) => {
     try {
-      const { type } = req.query;
+      const { type, search } = req.query;
       let filter = {};
-
+  
       if (type === 'past') {
-        filter = { startDate: { $lt: new Date() } }; 
+        filter.startDate = { $lt: new Date() };
       }
-
+  
+      if (search) {
+        filter.title = { $regex: search, $options: 'i' }; 
+      }
+  
       const books = await Book.find(filter);
-      res.status(200).json({ results: books });
+      res.status(200).json(books);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
   },
+  
 
   getBookById: async (req, res) => {
     try {

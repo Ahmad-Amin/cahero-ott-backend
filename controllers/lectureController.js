@@ -23,13 +23,21 @@ const lectureController = {
 
   getAllLectures: async (req, res) => {
     try {
-      const lectures = await Lecture.find();
-      res.status(200).json({ results: lectures });
+      const { search } = req.query;
+      let filter = {};
+
+      if (search) {
+        filter.title = { $regex: search, $options: 'i' }; 
+      }
+
+      const lectures = await Lecture.find(filter);
+      res.status(200).json(lectures);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
   },
+
 
   getLectureById: async (req, res) => {
     try {
@@ -58,9 +66,9 @@ const lectureController = {
 
       const updatedLecture = await Lecture.findByIdAndUpdate(
         lectureId,
-        { $set: req.body }, 
+        { $set: req.body },
         {
-          new: true,        
+          new: true,
           runValidators: true,
           context: 'query',
         }
