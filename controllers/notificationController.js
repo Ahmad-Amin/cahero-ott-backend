@@ -33,17 +33,19 @@ const notificationController = {
         specificRecipient,
         externalNotificationDelivery,
         content,
-        status: 'Pending',
+        status: externalNotificationDelivery === 'None' ? 'Sent' : 'Pending',
         recipients: recipients,
       });
 
-      const subject = `New Notification: ${notificationType}`;
-      try {
-        await sendEmails(recipients, subject, content);
-        notification.status = 'Sent';
-      } catch (emailError) {
-        console.error('Failed to send some or all emails:', emailError.message);
-        notification.status = 'Failed';
+      if (externalNotificationDelivery !== 'None') {
+        const subject = `New Notification: ${notificationType}`;
+        try {
+          await sendEmails(recipients, subject, content);
+          notification.status = 'Sent';
+        } catch (emailError) {
+          console.error('Failed to send some or all emails:', emailError.message);
+          notification.status = 'Failed';
+        }
       }
 
       await notification.save();
@@ -113,19 +115,21 @@ const notificationController = {
         return res.status(404).json({ message: 'Notification not found' });
       }
 
-      const { recipients, content, notificationType, specificRecipient } = notification;
+      const { recipients, content, notificationType, specificRecipient, externalNotificationDelivery } = notification;
 
       if (specificRecipient && specificRecipient.includes('@') && !recipients.includes(specificRecipient)) {
         recipients.push(specificRecipient);
       }
 
-      const subject = `Resend Notification: ${notificationType}`;
-      try {
-        await sendEmails(recipients, subject, content);
-        notification.status = 'Sent';
-      } catch (emailError) {
-        console.error('Failed to resend some or all emails:', emailError.message);
-        notification.status = 'Failed';
+      if (externalNotificationDelivery !== 'None') {
+        const subject = `Resend Notification: ${notificationType}`;
+        try {
+          await sendEmails(recipients, subject, content);
+          notification.status = 'Sent';
+        } catch (emailError) {
+          console.error('Failed to resend some or all emails:', emailError.message);
+          notification.status = 'Failed';
+        }
       }
 
       await notification.save();
