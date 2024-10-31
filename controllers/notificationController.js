@@ -141,7 +141,7 @@ const notificationController = {
         return res.status(404).json({ message: 'Notification not found' });
       }
 
-      const { recipients, content, notificationType, specificRecipient, externalNotificationDelivery } = originalNotification;
+      const { recipients, content, notificationType, specificRecipient, externalNotificationDelivery, recipientType } = originalNotification;
 
       // Add specificRecipient if it's an email and not already in recipients
       let newRecipients = [...recipients];
@@ -170,6 +170,7 @@ const notificationController = {
         content,
         notificationType,
         specificRecipient,
+        recipientType,
         externalNotificationDelivery,
         status: newStatus,
       });
