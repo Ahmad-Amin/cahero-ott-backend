@@ -7,6 +7,9 @@ const { validateNotificationCreation, validateNotificationUpdate } = require('..
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
 
+
+router.get('/notificationStream', notificationController.notificationStream);
+
 // Create a new notification
 router.post(
   '/notifications',
@@ -48,10 +51,6 @@ router.delete(
   authMiddleware,
   asyncHandler(notificationController.deleteNotification)
 );
-
-
-
-
 
 
 module.exports = router;

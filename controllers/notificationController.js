@@ -2,7 +2,28 @@ const Notification = require('../models/Notification');
 const { fetchUsersByRole, sendEmails } = require('../utils/helper_functions');
 const User = require('../models/User');
 
+let clients = []
+
 const notificationController = {
+
+  notificationStream: (req, res) => {
+    // Set headers for SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    // Push new client to the clients array
+    clients.push(res);
+
+    // Handle client disconnect
+    req.on('close', () => {
+      const index = clients.indexOf(res);
+      if (index !== -1) {
+        clients.splice(index, 1);
+      }
+    });
+  },
+
   createNotification: async (req, res) => {
     try {
       const {
@@ -50,6 +71,11 @@ const notificationController = {
 
       await notification.save();
 
+      // Notify all connected SSE clients
+      clients.forEach(client => {
+        client.write(`data: ${JSON.stringify(notification)}\n\n`);
+      });
+
       res.status(201).json({ message: 'Notification created and processed', notification });
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -79,7 +105,6 @@ const notificationController = {
       if (externalNotificationDelivery !== undefined) notification.externalNotificationDelivery = externalNotificationDelivery;
       if (content) notification.content = content;
 
-      // Update recipients based on recipientType
       let recipients = notification.recipients;
       if (recipientType === 'Admins') {
         recipients = await fetchUsersByRole('admin');
@@ -110,35 +135,58 @@ const notificationController = {
     try {
       const { notificationId } = req.params;
 
-      const notification = await Notification.findById(notificationId);
-      if (!notification) {
+      // Fetch the original notification
+      const originalNotification = await Notification.findById(notificationId);
+      if (!originalNotification) {
         return res.status(404).json({ message: 'Notification not found' });
       }
 
-      const { recipients, content, notificationType, specificRecipient, externalNotificationDelivery } = notification;
+      const { recipients, content, notificationType, specificRecipient, externalNotificationDelivery } = originalNotification;
 
-      if (specificRecipient && specificRecipient.includes('@') && !recipients.includes(specificRecipient)) {
-        recipients.push(specificRecipient);
+      // Add specificRecipient if it's an email and not already in recipients
+      let newRecipients = [...recipients];
+      if (specificRecipient && specificRecipient.includes('@') && !newRecipients.includes(specificRecipient)) {
+        newRecipients.push(specificRecipient);
       }
 
+      // Initialize the status of the new notification
+      let newStatus = 'Pending';
+      const subject = `Resend Notification: ${notificationType}`;
+
       if (externalNotificationDelivery !== 'None') {
-        const subject = `Resend Notification: ${notificationType}`;
         try {
-          await sendEmails(recipients, subject, content);
-          notification.status = 'Sent';
+          // Attempt to resend notification
+          await sendEmails(newRecipients, subject, content);
+          newStatus = 'Sent';
         } catch (emailError) {
           console.error('Failed to resend some or all emails:', emailError.message);
-          notification.status = 'Failed';
+          newStatus = 'Failed';
         }
       }
 
-      await notification.save();
+      // Create a new notification entry based on the original one
+      const newNotification = new Notification({
+        recipients: newRecipients,
+        content,
+        notificationType,
+        specificRecipient,
+        externalNotificationDelivery,
+        status: newStatus,
+      });
 
-      res.status(200).json({ message: 'Notification resent and processed', notification });
+      // Save the new notification entry
+      await newNotification.save();
+
+      clients.forEach(client => {
+        client.write(`data: ${JSON.stringify(newNotification)}\n\n`);
+      });
+
+      res.status(201).json({ message: 'Notification resent and new entry created', notification: newNotification });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   },
+
 
   getAllNotifications: async (req, res) => {
     try {
