@@ -150,7 +150,7 @@ const notificationController = {
       }
 
       // Initialize the status of the new notification
-      let newStatus = 'Pending';
+      let newStatus = externalNotificationDelivery === 'None' ? 'Sent' : 'Pending';
       const subject = `Resend Notification: ${notificationType}`;
 
       if (externalNotificationDelivery !== 'None') {
