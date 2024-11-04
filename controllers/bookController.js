@@ -1,4 +1,6 @@
 const Book = require('../models/Book');
+const { applyDateFilter } = require('../utils/helper_functions');
+
 
 const bookController = {
   createBook: async (req, res) => {
@@ -23,17 +25,22 @@ const bookController = {
 
   getAllBooks: async (req, res) => {
     try {
-      const { type, search } = req.query;
+      const { type, search, target } = req.query;
       let filter = {};
-  
+
+      // Filter by type (e.g., past events)
       if (type === 'past') {
         filter.startDate = { $lt: new Date() };
       }
-  
+
+      // Filter by search query
       if (search) {
-        filter.title = { $regex: search, $options: 'i' }; 
+        filter.title = { $regex: search, $options: 'i' };
       }
-  
+
+      filter = applyDateFilter(filter, target);
+
+      // Query the database with the updated filter
       const books = await Book.find(filter);
       res.status(200).json(books);
     } catch (error) {

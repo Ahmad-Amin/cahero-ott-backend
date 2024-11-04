@@ -1,4 +1,5 @@
 const Lecture = require('../models/Lecture');
+const { applyDateFilter } = require('../utils/helper_functions');
 
 const lectureController = {
   createLecture: async (req, res) => {
@@ -23,12 +24,14 @@ const lectureController = {
 
   getAllLectures: async (req, res) => {
     try {
-      const { search } = req.query;
+      const { search, target } = req.query;
       let filter = {};
 
       if (search) {
         filter.title = { $regex: search, $options: 'i' }; 
       }
+
+      filter = applyDateFilter(filter, target);
 
       const lectures = await Lecture.find(filter);
       res.status(200).json(lectures);

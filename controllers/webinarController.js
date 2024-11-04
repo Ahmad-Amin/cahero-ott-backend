@@ -1,6 +1,7 @@
 const Webinar = require('../models/Webinar');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
+const { applyDateFilter } = require('../utils/helper_functions');
 
 const webinarController = {
 
@@ -114,7 +115,7 @@ const webinarController = {
 
   getAllWebinars: async (req, res) => {
     try {
-      const { type, search } = req.query;
+      const { type, search, target } = req.query;
       let filter = {};
   
       if (type === 'past') {
@@ -124,6 +125,8 @@ const webinarController = {
       if (search) {
         filter.title = { $regex: search, $options: 'i' };
       }
+
+      filter = applyDateFilter(filter, target);
   
       const webinars = await Webinar.find(filter).sort({ startDate: 1 });
       res.status(200).json(webinars); 
