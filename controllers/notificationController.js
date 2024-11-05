@@ -7,20 +7,21 @@ let clients = []
 const notificationController = {
 
   notificationStream: (req, res) => {
+    const { role } = req.query;
+
+    if (!role || !['user', 'admin'].includes(role)) {
+      return res.status(400).send('Invalid role specified');
+    }
+
     // Set headers for SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Push new client to the clients array
-    clients.push(res);
+    clients.push({ res, role });
 
-    // Handle client disconnect
     req.on('close', () => {
-      const index = clients.indexOf(res);
-      if (index !== -1) {
-        clients.splice(index, 1);
-      }
+      clients = clients.filter(client => client.res !== res);
     });
   },
 
@@ -71,10 +72,15 @@ const notificationController = {
 
       await notification.save();
 
-      // Notify all connected SSE clients
+      // Notify only clients matching the recipient type
+      const targetRole = recipientType === 'Admins' ? 'admin' : recipientType === 'Users' ? 'user' : null;
+
       clients.forEach(client => {
-        client.write(`data: ${JSON.stringify(notification)}\n\n`);
+        if (!targetRole || client.role === targetRole) {
+          client.res.write(`data: ${JSON.stringify(notification)}\n\n`);
+        }
       });
+
 
       res.status(201).json({ message: 'Notification created and processed', notification });
     } catch (error) {
@@ -177,9 +183,12 @@ const notificationController = {
 
       // Save the new notification entry
       await newNotification.save();
+      const targetRole = recipientType === 'Admins' ? 'admin' : recipientType === 'Users' ? 'user' : null;
 
       clients.forEach(client => {
-        client.write(`data: ${JSON.stringify(newNotification)}\n\n`);
+        if (!targetRole || client.role === targetRole) {
+          client.res.write(`data: ${JSON.stringify(newNotification)}\n\n`);
+        }
       });
 
       res.status(201).json({ message: 'Notification resent and new entry created', notification: newNotification });
