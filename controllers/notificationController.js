@@ -8,18 +8,20 @@ const notificationController = {
 
   notificationStream: (req, res) => {
     const { role } = req.query;
-
+  
     if (!role || !['user', 'admin'].includes(role)) {
       return res.status(400).send('Invalid role specified');
     }
-
-    // Set headers for SSE
+  
+    // Set headers for SSE and CORS
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-
+    res.setHeader('Access-Control-Allow-Origin', 'https://master--enchanting-hotteok-438d96.netlify.app'); // Set your frontend URL here
+    res.flushHeaders();
+  
     clients.push({ res, role });
-
+  
     req.on('close', () => {
       clients = clients.filter(client => client.res !== res);
     });
