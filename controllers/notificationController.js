@@ -22,10 +22,17 @@ const notificationController = {
   
     clients.push({ res, role });
   
+    const keepAliveInterval = setInterval(() => {
+      res.write(':\n\n');
+    }, 25000);
+  
+    // Clean up on client disconnect
     req.on('close', () => {
+      clearInterval(keepAliveInterval); // Stop the keep-alive interval
       clients = clients.filter(client => client.res !== res);
     });
   },
+  
 
   createNotification: async (req, res) => {
     try {
