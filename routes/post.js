@@ -30,6 +30,20 @@ router.get(
   asyncHandler(postController.getPostById)
 );
 
+// Like/Unlike a post by ID (Toggle like)
+router.post(
+  '/posts/:postId/like',
+  authMiddleware,
+  asyncHandler(postController.toggleLike)
+);
+
+// Get like status for a post and user
+router.get(
+  '/posts/:postId/like-status',
+  authMiddleware,
+  asyncHandler(postController.getLikeStatus)
+);
+
 // Delete a post by ID
 router.delete(
   '/posts/:id',

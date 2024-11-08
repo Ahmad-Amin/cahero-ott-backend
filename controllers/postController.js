@@ -1,6 +1,46 @@
 const Post = require('../models/Post');
 
 const postController = {
+
+  toggleLike: async (req, res) => {
+    const { postId } = req.params;
+    const { userId } = req.user;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const liked = post.likedBy.includes(userId);
+    if (liked) {
+      post.likedBy.pull(userId);
+      post.likes -= 1;
+    } else {
+      post.likedBy.push(userId);
+      post.likes += 1;
+    }
+
+    await post.save();
+    return res.status(200).json({
+      message: liked ? 'Unliked the post' : 'Liked the post',
+      likes: post.likes,
+      likedBy: post.likedBy
+    });
+  },
+
+  getLikeStatus: async (req, res) => {
+    const { postId } = req.params;
+    const { userId } = req.user;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+
+    const liked = post.likedBy.includes(userId);
+    return res.status(200).json({ liked });
+  },
+
   createPost: async (req, res) => {
     try {
       const { content, likes, image } = req.body;
@@ -30,13 +70,13 @@ const postController = {
       }
 
       const posts = await Post.find(filter)
-        .populate('createdBy', 'firstName lastName')
+        .populate('createdBy', 'firstName lastName email')
         .populate({
           path: 'comments.user',
-          select: '_id, firstName lastName email profileImageUrl' 
+          select: '_id, firstName lastName email profileImageUrl'
         })
         .sort({ createdAt: -1 });
-      
+
       res.status(200).json(posts);
     } catch (error) {
       console.error(error);
