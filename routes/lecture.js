@@ -6,6 +6,7 @@ const lectureController = require('../controllers/lectureController.js');
 const { validateLectureCreation, validateLectureUpdate } = require('../middleware/validation/lecture-validator.js');
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
+const { validateReviewUpdate, validateReviewCreation } = require('../middleware/validation/review-validator.js');
 
 // Create a new lecture
 router.post(
@@ -42,6 +43,50 @@ router.patch(
   validateLectureUpdate,
   handleValidation,
   asyncHandler(lectureController.updateLecture)
+);
+
+// Add a review to a webinar
+router.post(
+  '/lectures/:id/reviews',
+  authMiddleware,
+  validateReviewCreation,
+  handleValidation,
+  asyncHandler(lectureController.addReview)
+);
+
+// Get all reviews for a webinar
+router.get(
+  '/lectures/:id/reviews',
+  asyncHandler(lectureController.getReviews)
+);
+
+// Update a review for a webinar
+router.put(
+  '/lectures/:id/reviews/:reviewId',
+  authMiddleware,
+  validateReviewUpdate,
+  handleValidation,
+  asyncHandler(lectureController.updateReview)
+);
+
+// Delete a review for a webinar
+router.delete(
+  '/lectures/:id/reviews/:reviewId',
+  authMiddleware,
+  asyncHandler(lectureController.deleteReview)
+);
+
+// Get the review stats
+router.get(
+  '/lectures/:id/reviews/stats',
+  asyncHandler(lectureController.getReviewStats)
+);
+
+// Toggle like on a review
+router.post(
+  '/lectures/:id/reviews/:reviewId/toggle-like',
+  authMiddleware,
+  lectureController.toggleReviewLike
 );
 
 module.exports = router;

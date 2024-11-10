@@ -1,7 +1,7 @@
 const Webinar = require('../models/Webinar');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
-const { applyDateFilter } = require('../utils/helper_functions');
+const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
 
 const webinarController = {
 
@@ -117,24 +117,24 @@ const webinarController = {
     try {
       const { type, search, target } = req.query;
       let filter = {};
-  
+
       if (type === 'past') {
         filter.startDate = { $lt: new Date() };
       }
-  
+
       if (search) {
         filter.title = { $regex: search, $options: 'i' };
       }
 
       filter = applyDateFilter(filter, target);
-  
+
       const webinars = await Webinar.find(filter).sort({ startDate: 1 });
-      res.status(200).json(webinars); 
+      res.status(200).json(webinars);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Server Error' });
     }
-  },  
+  },
 
   sendEmailToAllUsers: async (req, res) => {
     try {
@@ -224,7 +224,83 @@ const webinarController = {
       console.error(error);
       res.status(500).json({ message: 'Server Error: Failed to start streaming' });
     }
-  }
+  },
+
+  addReview: async (req, res) => {
+    try {
+      const { id: webinarId } = req.params;
+      const { content, rating } = req.body;
+      const userId = req.user.userId;
+
+      const review = await addReview(Webinar, webinarId, userId, content, rating);
+      res.status(201).json({ message: 'Review added successfully', review });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to add review' });
+    }
+  },
+
+  getReviews: async (req, res) => {
+    try {
+      const { id: webinarId } = req.params;
+      const reviews = await getReviews(Webinar, webinarId);
+      res.status(200).json(reviews);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve reviews' });
+    }
+  },
+
+  updateReview: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId } = req.params;
+      const { content, rating } = req.body;
+      const userId = req.user.userId;
+
+      const review = await updateReview(Webinar, webinarId, reviewId, userId, content, rating);
+      res.status(200).json({ message: 'Review updated successfully', review });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to update review' });
+    }
+  },
+
+  deleteReview: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await deleteReview(Webinar, webinarId, reviewId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to delete review' });
+    }
+  },
+
+  getReviewStats: async (req, res) => {
+    try {
+      const { id: webinarId } = req.params;
+      const stats = await getReviewStats(Webinar, webinarId);
+      res.status(200).json(stats);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve review stats' });
+    }
+  },
+
+  toggleReviewLike: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await toggleReviewLike(Webinar, webinarId, reviewId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to toggle like status' });
+    }
+  },
 }
 
 module.exports = webinarController;

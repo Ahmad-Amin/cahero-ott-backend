@@ -1,5 +1,6 @@
 const Book = require('../models/Book');
-const { applyDateFilter } = require('../utils/helper_functions');
+const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
+
 
 
 const bookController = {
@@ -48,7 +49,7 @@ const bookController = {
       res.status(500).json({ message: 'Server Error' });
     }
   },
-  
+
 
   getBookById: async (req, res) => {
     try {
@@ -110,6 +111,82 @@ const bookController = {
       res.status(500).json({ message: 'Server Error: Make sure ID is present' });
     }
   },
+
+  addReview: async (req, res) => {
+    try {
+      const { id: bookId } = req.params;
+      const { content, rating } = req.body;
+      const userId = req.user.userId;
+
+      const review = await addReview(Book, bookId, userId, content, rating);
+      res.status(201).json({ message: 'Review added successfully', review });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to add review' });
+    }
+  },
+
+  getReviews: async (req, res) => {
+    try {
+      const { id: bookId } = req.params;
+      const reviews = await getReviews(Book, bookId);
+      res.status(200).json(reviews);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve reviews' });
+    }
+  },
+
+  updateReview: async (req, res) => {
+    try {
+      const { id: bookId, reviewId } = req.params;
+      const { content, rating } = req.body;
+      const userId = req.user.userId;
+
+      const review = await updateReview(Book, bookId, reviewId, userId, content, rating);
+      res.status(200).json({ message: 'Review updated successfully', review });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to update review' });
+    }
+  },
+
+  deleteReview: async (req, res) => {
+    try {
+      const { id: bookId, reviewId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await deleteReview(Book, bookId, reviewId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to delete review' });
+    }
+  },
+
+  getReviewStats: async (req, res) => {
+    try {
+      const { id: bookId } = req.params;
+      const stats = await getReviewStats(Book, bookId);
+      res.status(200).json(stats);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve review stats' });
+    }
+  },
+
+  toggleReviewLike: async (req, res) => {
+    try {
+      const { id: bookId, reviewId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await toggleReviewLike(Book, bookId, reviewId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to toggle like status' });
+    }
+  }
 };
 
 module.exports = bookController;

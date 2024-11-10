@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const reviewSchema = require('./review');
 
 const lectureSchema = new mongoose.Schema({
   title: {
@@ -30,7 +31,8 @@ const lectureSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
-  }
+  },
+  reviews: [reviewSchema]
 }, { timestamps: true });
 
 lectureSchema.set('toJSON', {

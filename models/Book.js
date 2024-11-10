@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const reviewSchema = require('./review');
 
 // Define the schema for the Book model
 const bookSchema = new mongoose.Schema({
@@ -31,7 +32,8 @@ const bookSchema = new mongoose.Schema({
     type: String,
     required: false,
     trim: true
-  }
+  },
+  reviews: [reviewSchema]
 }, { timestamps: true });
 
 

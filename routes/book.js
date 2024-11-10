@@ -6,6 +6,7 @@ const bookController = require('../controllers/bookController.js');
 const { validateBookCreation, validateBookUpdate } = require('../middleware/validation/book-validator.js');
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
+const { validateReviewUpdate, validateReviewCreation } = require('../middleware/validation/review-validator.js');
 
 // Create a new book
 router.post(
@@ -43,5 +44,53 @@ router.patch(
   handleValidation,
   asyncHandler(bookController.updateBook)
 );
+
+
+// Add a review to a book
+router.post(
+  '/books/:id/reviews',
+  authMiddleware,
+  validateReviewCreation,
+  handleValidation,
+  asyncHandler(bookController.addReview)
+);
+
+
+// Get all reviews for a book
+router.get(
+  '/books/:id/reviews',
+  asyncHandler(bookController.getReviews)
+);
+
+// Update a review for a book
+router.put(
+  '/books/:id/reviews/:reviewId',
+  authMiddleware,
+  validateReviewUpdate,
+  handleValidation,
+  asyncHandler(bookController.updateReview)
+);
+
+// Delete a review for a book
+router.delete(
+  '/books/:id/reviews/:reviewId',
+  authMiddleware,
+  asyncHandler(bookController.deleteReview)
+);
+
+// Get the review stats
+router.get(
+  '/books/:id/reviews/stats',
+  asyncHandler(bookController.getReviewStats)
+);
+
+// Toggle like on a review
+router.post(
+  '/books/:id/reviews/:reviewId/toggle-like',
+  authMiddleware,
+  bookController.toggleReviewLike
+);
+
+
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const reviewSchema = require('./review');
 const { Schema } = mongoose;
 
 // Define the schema for the event
@@ -46,6 +47,7 @@ const webinarSchema = new Schema({
     ref: 'User',
     required: true,
   },
+  reviews: [reviewSchema]
 }, { timestamps: true });
 
 webinarSchema.pre('save', function (next) {
