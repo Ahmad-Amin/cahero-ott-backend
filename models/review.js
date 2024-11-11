@@ -1,5 +1,6 @@
 // reviewSchema.js
 const mongoose = require('mongoose');
+const replySchema = require('./Reply');
 const { Schema } = mongoose;
 
 const reviewSchema = new Schema({
@@ -24,7 +25,8 @@ const reviewSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'User'
     }
-  ]
+  ],
+  replies: [replySchema]
 }, { timestamps: true });
 
 reviewSchema.virtual('likeCount').get(function () {

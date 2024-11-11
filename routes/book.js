@@ -6,7 +6,7 @@ const bookController = require('../controllers/bookController.js');
 const { validateBookCreation, validateBookUpdate } = require('../middleware/validation/book-validator.js');
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
-const { validateReviewUpdate, validateReviewCreation } = require('../middleware/validation/review-validator.js');
+const { validateReviewUpdate, validateReviewCreation, validateReviewReplyCreation } = require('../middleware/validation/review-validator.js');
 
 // Create a new book
 router.post(
@@ -91,6 +91,23 @@ router.post(
   bookController.toggleReviewLike
 );
 
+
+// Reply Routes
+router.post(
+  '/books/:id/reviews/:reviewId/replies',
+  authMiddleware,
+  validateReviewReplyCreation,
+  handleValidation,
+  asyncHandler(bookController.addReply)
+);
+
+router.get('/books/:id/reviews/:reviewId/replies', asyncHandler(bookController.getReplies));
+
+router.delete(
+  '/books/:id/reviews/:reviewId/replies/:replyId',
+  authMiddleware,
+  asyncHandler(bookController.deleteReply)
+);
 
 
 module.exports = router;

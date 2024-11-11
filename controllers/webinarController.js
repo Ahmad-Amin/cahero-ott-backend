@@ -2,6 +2,7 @@ const Webinar = require('../models/Webinar');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
+const { addReply, getReplies, deleteReply } = require('../utils/replyHelper');
 
 const webinarController = {
 
@@ -299,6 +300,45 @@ const webinarController = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message || 'Server Error: Failed to toggle like status' });
+    }
+  },
+
+  // Reply management methods
+  addReply: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId } = req.params;
+      const { content } = req.body;
+      const userId = req.user.userId;
+
+      const reply = await addReply(Webinar, webinarId, reviewId, userId, content);
+      res.status(201).json({ message: 'Reply added successfully', reply });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to add reply' });
+    }
+  },
+
+  getReplies: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId } = req.params;
+      const replies = await getReplies(Webinar, webinarId, reviewId);
+      res.status(200).json(replies);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve replies' });
+    }
+  },
+
+  deleteReply: async (req, res) => {
+    try {
+      const { id: webinarId, reviewId, replyId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await deleteReply(Webinar, webinarId, reviewId, replyId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to delete reply' });
     }
   },
 }

@@ -82,7 +82,10 @@ const addReview = async (Model, modelId, userId, content, rating) => {
 };
 
 const getReviews = async (Model, modelId) => {
-  const entity = await Model.findById(modelId).populate('reviews.createdBy', 'firstName lastName email');
+  const entity = await Model.findById(modelId)
+    .populate('reviews.createdBy', 'firstName lastName email') // Populate createdBy for reviews
+    .populate('reviews.replies.createdBy', 'firstName lastName email'); // Populate createdBy for replies
+
   if (!entity) {
     throw new Error('Entity not found');
   }
@@ -90,12 +93,16 @@ const getReviews = async (Model, modelId) => {
   const sortedReviews = entity.reviews
     .map(review => ({
       ...review.toJSON(),
-      likeCount: review.likeCount
+      likeCount: review.likeCount,
+      replies: review.replies.map(reply => ({
+        ...reply.toJSON(),
+      }))
     }))
     .sort((a, b) => b.createdAt - a.createdAt);
 
   return sortedReviews;
 };
+
 
 const updateReview = async (Model, modelId, reviewId, userId, content, rating) => {
   const entity = await Model.findById(modelId);

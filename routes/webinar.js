@@ -4,7 +4,7 @@ const router = express.Router();
 const authMiddleware = require('../middleware/auth.js')
 const webinarController = require('../controllers/webinarController.js');
 const { validateWebinarCreation, validateWebinarUpdate } = require('../middleware/validation/webinar-validator.js')
-const { validateReviewCreation, validateReviewUpdate } = require('../middleware/validation/review-validator.js');
+const { validateReviewCreation, validateReviewUpdate, validateReviewReplyCreation } = require('../middleware/validation/review-validator.js');
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
 
@@ -114,6 +114,23 @@ router.post(
   '/webinars/:id/reviews/:reviewId/toggle-like',
   authMiddleware,
   webinarController.toggleReviewLike
+);
+
+// Reply Routes
+router.post(
+  '/webinars/:id/reviews/:reviewId/replies',
+  authMiddleware,
+  validateReviewReplyCreation,
+  handleValidation,
+  asyncHandler(webinarController.addReply)
+);
+
+router.get('/webinars/:id/reviews/:reviewId/replies', asyncHandler(webinarController.getReplies));
+
+router.delete(
+  '/webinars/:id/reviews/:reviewId/replies/:replyId',
+  authMiddleware,
+  asyncHandler(webinarController.deleteReply)
 );
 
 module.exports = router;

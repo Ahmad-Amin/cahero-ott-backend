@@ -1,7 +1,6 @@
 const Book = require('../models/Book');
 const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
-
-
+const { addReply, getReplies, deleteReply } = require('../utils/replyHelper');
 
 const bookController = {
   createBook: async (req, res) => {
@@ -186,7 +185,45 @@ const bookController = {
       console.error(error);
       res.status(500).json({ error: error.message || 'Server Error: Failed to toggle like status' });
     }
-  }
+  },
+
+  addReply: async (req, res) => {
+    try {
+      const { id: bookId, reviewId } = req.params;
+      const { content } = req.body;
+      const userId = req.user.userId;
+
+      const reply = await addReply(Book, bookId, reviewId, userId, content);
+      res.status(201).json({ message: 'Reply added successfully', reply });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to add reply' });
+    }
+  },
+
+  getReplies: async (req, res) => {
+    try {
+      const { id: bookId, reviewId } = req.params;
+      const replies = await getReplies(Book, bookId, reviewId);
+      res.status(200).json(replies);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to retrieve replies' });
+    }
+  },
+
+  deleteReply: async (req, res) => {
+    try {
+      const { id: bookId, reviewId, replyId } = req.params;
+      const userId = req.user.userId;
+
+      const response = await deleteReply(Book, bookId, reviewId, replyId, userId);
+      res.status(200).json(response);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: error.message || 'Server Error: Failed to delete reply' });
+    }
+  },
 };
 
 module.exports = bookController;

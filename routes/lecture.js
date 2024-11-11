@@ -6,7 +6,7 @@ const lectureController = require('../controllers/lectureController.js');
 const { validateLectureCreation, validateLectureUpdate } = require('../middleware/validation/lecture-validator.js');
 const handleValidation = require('../middleware/handleValidation');
 const asyncHandler = require('../middleware/asyncHandler');
-const { validateReviewUpdate, validateReviewCreation } = require('../middleware/validation/review-validator.js');
+const { validateReviewUpdate, validateReviewCreation, validateReviewReplyCreation } = require('../middleware/validation/review-validator.js');
 
 // Create a new lecture
 router.post(
@@ -88,5 +88,23 @@ router.post(
   authMiddleware,
   lectureController.toggleReviewLike
 );
+
+// Reply Routes
+router.post(
+  '/lectures/:id/reviews/:reviewId/replies',
+  authMiddleware,
+  validateReviewReplyCreation,
+  handleValidation,
+  asyncHandler(lectureController.addReply)
+);
+
+router.get('/lectures/:id/reviews/:reviewId/replies', asyncHandler(lectureController.getReplies));
+
+router.delete(
+  '/lectures/:id/reviews/:reviewId/replies/:replyId',
+  authMiddleware,
+  asyncHandler(lectureController.deleteReply)
+);
+
 
 module.exports = router;
