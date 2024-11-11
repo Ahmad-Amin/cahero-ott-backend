@@ -21,7 +21,7 @@ const validatePostCreation = [
     .withMessage('URL must be a valid URL'),
 
   body('type')
-    .notEmpty().withMessage('Type is required')
+    .optional()
     .isIn(['image', 'video']).withMessage('Type must be either "image" or "video"'),
 
   body('comments.*.user')
