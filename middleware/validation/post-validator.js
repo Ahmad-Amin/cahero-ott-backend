@@ -10,7 +10,7 @@ const validatePostCreation = [
     .optional()
     .isInt({ min: 0 }).withMessage('Likes must be a non-negative integer'),
 
-  body('image')
+  body('assetUrl')
     .optional()
     .trim()
     .isURL({
@@ -18,7 +18,11 @@ const validatePostCreation = [
       protocols: ['http', 'https'],
       require_protocol: true
     })
-    .withMessage('Image URL must be a valid URL'),
+    .withMessage('URL must be a valid URL'),
+
+  body('type')
+    .notEmpty().withMessage('Type is required')
+    .isIn(['image', 'video']).withMessage('Type must be either "image" or "video"'),
 
   body('comments.*.user')
     .optional()
@@ -41,7 +45,11 @@ const validatePostUpdate = [
     .optional()
     .isInt({ min: 0 }).withMessage('Likes must be a non-negative integer'),
 
-  body('image')
+  body('type')
+    .optional()
+    .isIn(['image', 'video']).withMessage('Type must be either "image" or "video"'),
+
+  body('assetUrl')
     .optional()
     .trim()
     .isURL({

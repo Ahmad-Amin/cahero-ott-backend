@@ -11,7 +11,12 @@ const postSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  image: {
+  type: {
+    type: String,
+    enum: ['image', 'video'],
+    required: true
+  },
+  assetUrl: {
     type: String,
     trim: true // URL for the image
   },

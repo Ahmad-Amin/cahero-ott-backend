@@ -43,13 +43,14 @@ const postController = {
 
   createPost: async (req, res) => {
     try {
-      const { content, likes, image } = req.body;
+      const { content, likes, assetUrl, type } = req.body;
       const { userId } = req.user;
 
       const post = new Post({
         content,
         likes,
-        image,
+        assetUrl,
+        type,
         createdBy: userId
       });
 
