@@ -29,9 +29,18 @@ const storage = multerS3({
       folder = 'assets/audio';
     } else if (file.mimetype.startsWith('video/')) {
       folder = 'assets/videos';
+    } else if (file.mimetype === 'application/pdf') {
+      folder = 'assets/documents';
     }
 
     cb(null, `${folder}/${Date.now()}-${file.originalname}`);
+  },
+  contentDisposition: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, 'inline');
+    } else {
+      cb(null, 'attachment');
+    }
   }
 });
 

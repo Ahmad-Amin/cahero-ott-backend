@@ -30,13 +30,20 @@ router.post(
   uploadFile            
 );
 
-
 router.post(
   '/upload/profile',
   upload.single('file'),
   validateFile('image'),
   handleValidation,    
   uploadFile            
+);
+
+router.post(
+  '/upload/document',
+  upload.single('file'),
+  validateFile('document'),
+  handleValidation,
+  uploadFile
 );
 
 module.exports = router;

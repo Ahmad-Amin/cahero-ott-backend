@@ -22,7 +22,7 @@ const validatePostCreation = [
 
   body('type')
     .optional()
-    .isIn(['image', 'video']).withMessage('Type must be either "image" or "video"'),
+    .isIn(['image', 'video', 'document']).withMessage('Type must be either "image" or "video"'),
 
   body('comments.*.user')
     .optional()
@@ -47,7 +47,7 @@ const validatePostUpdate = [
 
   body('type')
     .optional()
-    .isIn(['image', 'video']).withMessage('Type must be either "image" or "video"'),
+    .isIn(['image', 'video', 'document']).withMessage('Type must be either "image" or "video"'),
 
   body('assetUrl')
     .optional()

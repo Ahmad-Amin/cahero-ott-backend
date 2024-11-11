@@ -13,12 +13,12 @@ const postSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['image', 'video'],
+    enum: ['image', 'video', 'document'],
     required: true
   },
   assetUrl: {
     type: String,
-    trim: true // URL for the image
+    trim: true
   },
   likedBy: [{
     type: mongoose.Schema.Types.ObjectId,
