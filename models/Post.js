@@ -14,7 +14,7 @@ const postSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ['image', 'video', 'document'],
-    required: true
+    required: false
   },
   assetUrl: {
     type: String,

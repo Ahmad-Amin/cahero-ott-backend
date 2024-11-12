@@ -187,7 +187,8 @@ const postController = {
   deleteComment: async (req, res) => {
     try {
       const { postId, commentId } = req.params;
-      const userId = req.user.userId; // Assuming req.user contains userId from authentication middleware
+      const userId = req.user.userId; 
+      const role = req.user.role; 
 
       const post = await Post.findById(postId);
       if (!post) {
@@ -200,7 +201,7 @@ const postController = {
       }
 
       // Optionally, check if the user owns the comment before deleting
-      if (comment.user.toString() !== userId.toString()) {
+      if ((comment.user.toString() !== userId.toString()) && role !== 'admin') {
         return res.status(403).json({ message: 'Unauthorized' });
       }
 
