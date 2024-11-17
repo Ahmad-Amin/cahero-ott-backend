@@ -1,5 +1,6 @@
 const Lecture = require('../models/Lecture');
 const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
+const { addToFavorites, removeFromFavorites, getFavorites } = require('../utils/favoritesService');
 const { addReply, getReplies, deleteReply } = require('../utils/replyHelper');
 
 const lectureController = {
@@ -216,6 +217,51 @@ const lectureController = {
       res.status(500).json({ error: error.message || 'Server Error: Failed to delete reply' });
     }
   },
+
+  favoriteLecture: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: 'Lecture ID is required' });
+      }
+
+      const updatedUser = await addToFavorites(userId, 'Lecture', id);
+      res.status(200).json({ message: 'Lecture added to favorites', favorites: updatedUser.favorites });
+    } catch (error) {
+      res.status(500).json({ message: 'Error adding lecture to favorites', error: error.message });
+    }
+  },
+
+  removeFavoriteLecture: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: 'Lecture ID is required' });
+      }
+
+      const updatedUser = await removeFromFavorites(userId, 'Lecture', id);
+      res.status(200).json({ message: 'Lecture removed from favorites', favorites: updatedUser.favorites });
+    } catch (error) {
+      res.status(500).json({ message: 'Error removing lecture from favorites', error: error.message });
+    }
+  },
+
+  getFavoriteLectures: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const type = 'Lecture';
+
+      const favorites = await getFavorites(userId, type);
+      res.status(200).json({ message: `User ${type} favorites retrieved successfully`, favorites });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving user favorites', error: error.message });
+    }
+  },
+
 };
 
 module.exports = lectureController;

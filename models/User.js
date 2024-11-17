@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
   },
   bio: {
     type: String,
-    required: false,
     trim: true,
   },
   password: {
@@ -40,20 +39,45 @@ const userSchema = new mongoose.Schema({
   },
   profileImageUrl: {
     type: String,
-    required: false,
     trim: true,
-  }
-})
+  },
+  favorites: [
+    {
+      type: {
+        type: String,
+        enum: ['Webinar', 'Book', 'Lecture'],
+        required: true,
+      },
+      item: {
+        type: mongoose.Schema.Types.ObjectId,
+        refPath: 'favorites.type', 
+        required: true,
+      },
+    },
+  ],
+});
 
-// Add toJSON and toObject transformation
+// Ensure no duplicate favorites
+userSchema.index({ 'favorites.type': 1, 'favorites.item': 1 }, { unique: true });
+
 userSchema.set('toJSON', {
   transform: (doc, ret) => {
     ret.id = ret._id;
     delete ret._id;
     delete ret.__v;
-    delete ret.password;  // If you don't want to return the password field
+    delete ret.password; // Exclude password from the output
+
+    // Transform the favorites array
+    if (ret.favorites) {
+      ret.favorites = ret.favorites.map(favorite => {
+        const transformedFavorite = { ...favorite, id: favorite._id }; // Create an id field
+        delete transformedFavorite._id; // Remove the _id field
+        return transformedFavorite;
+      });
+    }
+
     return ret;
-  }
+  },
 });
 
 userSchema.set('toObject', {
@@ -61,10 +85,21 @@ userSchema.set('toObject', {
     ret.id = ret._id;
     delete ret._id;
     delete ret.__v;
-    delete ret.password;  // If you don't want to return the password field
+    delete ret.password; // Exclude password from the output
+
+    // Transform the favorites array
+    if (ret.favorites) {
+      ret.favorites = ret.favorites.map(favorite => {
+        const transformedFavorite = { ...favorite, id: favorite._id }; // Create an id field
+        delete transformedFavorite._id; // Remove the _id field
+        return transformedFavorite;
+      });
+    }
+
     return ret;
-  }
+  },
 });
+
 
 userSchema.pre('save', async function (next) {
   if (this.isModified('password') || this.isNew) {

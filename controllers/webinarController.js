@@ -2,6 +2,7 @@ const Webinar = require('../models/Webinar');
 const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const { applyDateFilter, addReview, getReviews, updateReview, deleteReview, getReviewStats, toggleReviewLike } = require('../utils/helper_functions');
+const { addToFavorites, removeFromFavorites, getFavorites } = require('../utils/favoritesService');
 const { addReply, getReplies, deleteReply } = require('../utils/replyHelper');
 
 const webinarController = {
@@ -339,6 +340,51 @@ const webinarController = {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: error.message || 'Server Error: Failed to delete reply' });
+    }
+  },
+
+  favoriteWebinar: async (req, res) => {
+    try {
+      const { userId } = req.user; 
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: 'Webinar ID is required' });
+      }
+  
+      const updatedUser = await addToFavorites(userId, 'Webinar', id);
+      res.status(200).json({ message: 'Webinar added to favorites', favorites: updatedUser.favorites });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error adding webinar to favorites', error: error.message });
+    }
+  },
+
+  removeFavoriteWebinar: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const { id } = req.params;
+
+      if (!id) {
+        return res.status(400).json({ message: 'Webinar ID is required' });
+      }
+
+      const updatedUser = await removeFromFavorites(userId, 'Webinar', id);
+      res.status(200).json({ message: 'Webinar removed from favorites', favorites: updatedUser.favorites });
+    } catch (error) {
+      res.status(500).json({ message: 'Error removing webinar from favorites', error: error.message });
+    }
+  },
+
+  getFavoriteWebinars: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const type = 'Webinar' 
+  
+      const favorites = await getFavorites(userId, type);
+      res.status(200).json({ message: `User ${type} favorites retrieved successfully`, favorites });
+    } catch (error) {
+      res.status(500).json({ message: 'Error retrieving user favorites', error: error.message });
     }
   },
 }

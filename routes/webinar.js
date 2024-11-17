@@ -25,6 +25,13 @@ router.get(
   asyncHandler(webinarController.getAllWebinars)
 );
 
+// Get favorite webinars for the authenticated user
+router.get(
+  '/webinars/favorites',
+  authMiddleware,
+  asyncHandler(webinarController.getFavoriteWebinars)
+);
+
 // get  webinar by ID
 router.get(
   '/webinars/:id',
@@ -131,6 +138,20 @@ router.delete(
   '/webinars/:id/reviews/:reviewId/replies/:replyId',
   authMiddleware,
   asyncHandler(webinarController.deleteReply)
+);
+
+// Add a webinar to favorites
+router.post(
+  '/webinars/:id/favorite',
+  authMiddleware,
+  asyncHandler(webinarController.favoriteWebinar)
+);
+
+// Remove a webinar from favorites
+router.delete(
+  '/webinars/:id/favorite',
+  authMiddleware,
+  asyncHandler(webinarController.removeFavoriteWebinar)
 );
 
 module.exports = router;

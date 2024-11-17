@@ -106,5 +106,26 @@ router.delete(
   asyncHandler(lectureController.deleteReply)
 );
 
+// Add a lecture to favorites
+router.post(
+  '/lectures/:id/favorite',
+  authMiddleware,
+  asyncHandler(lectureController.favoriteLecture)
+);
+
+// Remove a lecture from favorites
+router.delete(
+  '/lectures/:id/favorite',
+  authMiddleware,
+  asyncHandler(lectureController.removeFavoriteLecture)
+);
+
+// Get favorite lectures for the authenticated user
+router.get(
+  '/lectures/favorites',
+  authMiddleware,
+  asyncHandler(lectureController.getFavoriteLectures)
+);
+
 
 module.exports = router;

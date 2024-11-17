@@ -109,5 +109,25 @@ router.delete(
   asyncHandler(bookController.deleteReply)
 );
 
+// Add a book to favorites
+router.post(
+  '/books/:id/favorite',
+  authMiddleware,
+  asyncHandler(bookController.favoriteBook)
+);
+
+// Remove a book from favorites
+router.delete(
+  '/books/:id/favorite',
+  authMiddleware,
+  asyncHandler(bookController.removeFavoriteBook)
+);
+
+// Get favorite book for the authenticated user
+router.get(
+  '/books/favorites',
+  authMiddleware,
+  asyncHandler(bookController.getFavoriteBooks)
+);
 
 module.exports = router;
