@@ -23,6 +23,13 @@ router.get(
   asyncHandler(lectureController.getAllLectures)
 );
 
+// Get favorite lectures for the authenticated user
+router.get(
+  '/lectures/favorites',
+  authMiddleware,
+  asyncHandler(lectureController.getFavoriteLectures)
+);
+
 // Get a lecture by ID
 router.get(
   '/lectures/:id',
@@ -118,13 +125,6 @@ router.delete(
   '/lectures/:id/favorite',
   authMiddleware,
   asyncHandler(lectureController.removeFavoriteLecture)
-);
-
-// Get favorite lectures for the authenticated user
-router.get(
-  '/lectures/favorites',
-  authMiddleware,
-  asyncHandler(lectureController.getFavoriteLectures)
 );
 
 

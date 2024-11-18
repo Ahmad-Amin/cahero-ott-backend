@@ -23,6 +23,14 @@ router.get(
   asyncHandler(bookController.getAllBooks)
 );
 
+// Get favorite book for the authenticated user
+router.get(
+  '/books/favorites',
+  authMiddleware,
+  asyncHandler(bookController.getFavoriteBooks)
+);
+
+
 // Get a book by ID
 router.get(
   '/books/:id',
@@ -123,11 +131,5 @@ router.delete(
   asyncHandler(bookController.removeFavoriteBook)
 );
 
-// Get favorite book for the authenticated user
-router.get(
-  '/books/favorites',
-  authMiddleware,
-  asyncHandler(bookController.getFavoriteBooks)
-);
 
 module.exports = router;
